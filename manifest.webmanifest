@@ -1,0 +1,11 @@
+{
+  "name": "Shift Calendar 2026",
+  "short_name": "Shift Calendar",
+  "start_url": "./shift_calendar_2026_v1_1_mobile.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f8fb",
+  "theme_color": "#7896b8",
+  "orientation": "portrait-primary",
+  "description": "PTT LNG Shift Calendar — Excel Import, annual/monthly schedule, notes and local overrides."
+}
