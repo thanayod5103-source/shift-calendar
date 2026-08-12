@@ -1,0 +1,10 @@
+Shift T — Truck Loading roster from provided Excel
+
+1. 1. กิตติวัฒน์ รอดสน | Section Mgr. | 580008
+2. 2. ศรันญา เวชชกรรม | Operator (FA) | 620015
+3. 3. สิทธิโชค ช่างเหล็ก | Operator (FB) | 660017
+4. 4. วุฒิภัทร วุฒิ | Operator (FC) | 640004
+5. 5. วีรภัฏ ขัดทะเสมา | Operator (FD) | 660025
+6. 1. กิตติศักดิ์ สิทธิวงษ์ | Asst. Operator | C620001
+7. 2. วรราช บุญโสม | Asst. Operator | C630006
+8. 3. ธณัฐชา ค้าแก้ว | Asst. Admin | C670017
