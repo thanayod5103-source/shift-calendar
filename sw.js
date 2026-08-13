@@ -16,27 +16,14 @@ const DETAIL_UI_SCRIPT = `
   const css = document.createElement('style');
   css.id = 'shift-calendar-detail-ui-v8';
   css.textContent = \`
-    /* Stronger normal-work vs OT contrast */
     .work { background:#c7e4cf !important; color:#164b29 !important; border:1px solid #8fbe9c !important; }
     .night { background:#c7d9ee !important; color:#173d66 !important; border:1px solid #8eacd0 !important; }
     .ot { background:#24551f !important; color:#fff !important; border:1px solid #173b14 !important; font-weight:800 !important; }
     .nightOt { background:#0b2e57 !important; color:#fff !important; border:1px solid #061d38 !important; font-weight:800 !important; }
     .work.ot, .night.ot { filter:none !important; }
-
-    /* Date-detail modal: remove the large overview block */
     .modal .detailGrid { display:none !important; }
-    #compactStatusSummary {
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(105px,1fr));
-      gap:7px;
-      margin:12px 0 10px;
-    }
-    #compactStatusSummary .compactStat {
-      border:1px solid #cbd4de;
-      border-radius:9px;
-      padding:8px 9px;
-      background:#f7f9fb;
-    }
+    #compactStatusSummary { display:grid; grid-template-columns:repeat(auto-fit,minmax(105px,1fr)); gap:7px; margin:12px 0 10px; }
+    #compactStatusSummary .compactStat { border:1px solid #cbd4de; border-radius:9px; padding:8px 9px; background:#f7f9fb; }
     #compactStatusSummary .compactStat b { display:block; font-size:16px; color:#1f2d3a; }
     #compactStatusSummary .compactStat span { font-size:10px; color:#53606c; }
     #compactStatusSummary .compactStat.work { background:#e8f4eb !important; color:#164b29 !important; border-color:#9fc7aa !important; }
@@ -49,10 +36,7 @@ const DETAIL_UI_SCRIPT = `
     .modal .changeList { margin-top:10px; }
     .modal .change { display:flex; align-items:center; justify-content:space-between; gap:10px; }
     .modal .change > * { min-width:0; }
-    @media(max-width:720px){
-      #compactStatusSummary { grid-template-columns:repeat(2,minmax(0,1fr)); }
-      .modal .change { padding:8px 0; }
-    }
+    @media(max-width:720px){ #compactStatusSummary { grid-template-columns:repeat(2,minmax(0,1fr)); } .modal .change { padding:8px 0; } }
   \`;
   document.head.appendChild(css);
 
@@ -85,18 +69,15 @@ const DETAIL_UI_SCRIPT = `
       const rows = Array.from(list.querySelectorAll('.change'));
       const counts = new Map();
       rows.forEach(row => { const s = statusFromRow(row); if(s) counts.set(s[0], (counts.get(s[0])||0)+1); });
-      const order = [
-        ['Day','work'],['Night','night'],['Day OT','ot'],['Night OT','nightOt'],
-        ['Leave','leave'],['OFF','off'],['Training','train']
-      ];
+      const order = [['Day','work'],['Night','night'],['Day OT','ot'],['Night OT','nightOt'],['Leave','leave'],['OFF','off'],['Training','train']];
       const summary = document.createElement('div');
       summary.id = 'compactStatusSummary';
       order.forEach(([label,cls]) => {
         const count = counts.get(label) || 0;
         if (!count) return;
         const box = document.createElement('div');
-        box.className = `compactStat ${cls}`;
-        box.innerHTML = `<b>${count}</b><span>${label}</span>`;
+        box.className = 'compactStat ' + cls;
+        box.innerHTML = '<b>' + count + '</b><span>' + label + '</span>';
         summary.appendChild(box);
       });
       list.parentNode.insertBefore(summary, list);
