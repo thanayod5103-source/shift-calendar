@@ -10,7 +10,68 @@
 <style>html,body{margin:0;width:100%;height:100%;background:#f6f8fb}body{overflow:hidden}iframe{display:block;width:100%;height:100%;height:100dvh;border:0}</style>
 </head>
 <body>
-<iframe src="./calendar.html" title="Shift Calendar"></iframe>
-<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}</script>
+<iframe id="calendarFrame" src="./calendar.html" title="Shift Calendar"></iframe>
+<script>
+(function(){
+  const frame=document.getElementById('calendarFrame');
+  function apply(){
+    try{
+      const w=frame.contentWindow, d=w.document;
+      if(!d||!w.render)return;
+
+      const style=d.createElement('style');
+      style.id='calendar-main-overrides';
+      style.textContent=`
+        .monthFoot{display:none!important}
+        .source{font-size:11px}
+        #todayBadge{display:inline-flex;align-items:center;gap:6px;margin-top:5px;font-size:11px;color:#5f6c78;background:#f7fafc;border:1px solid #e4e9ef;border-radius:999px;padding:5px 9px}
+        #todayBadge b{font-weight:750;color:#496b92}
+      `;
+      d.head.appendChild(style);
+
+      const zone='Asia/Bangkok';
+      const fmt=new Intl.DateTimeFormat('en-GB',{timeZone:zone,calendar:'gregory',year:'numeric',month:'2-digit',day:'2-digit'});
+      const getToday=()=>{const p=fmt.formatToParts(new Date()).reduce((a,x)=>(a[x.type]=x.value,a),{});return {year:+p.year,month:+p.month,day:+p.day};};
+      w.getToday=getToday;
+
+      w.classify=function(code){
+        if(!code)return {label:'OFF',cls:'off',raw:'OFF'};
+        const c=String(code).trim(),u=c.toUpperCase();
+        if(u==='D')return {label:'Day',cls:'work',raw:c};
+        if(u==='N')return {label:'Night',cls:'night',raw:c};
+        if(u==='DOT')return {label:'Day OT',cls:'ot',raw:c};
+        if(u==='NOT')return {label:'Night OT',cls:'nightOt',raw:c};
+        if(u==='OT')return {label:'OT',cls:'ot',raw:c};
+        if(w.trainingCodes && w.trainingCodes.has(c))return {label:'Training',cls:'train',raw:c};
+        if(/train|seminar|course|training/i.test(c))return {label:'Training',cls:'train',raw:c};
+        return {label:'OFF',cls:'off',raw:c};
+      };
+
+      w.renderLegend=function(){
+        const items=[['work','Day'],['night','Night'],['off','OFF'],['train','Training'],['ot','OT']];
+        const el=d.getElementById('legend');
+        if(el)el.innerHTML=items.map(([c,l])=>`<span><i class="dotStatus" style="background:var(--${c})"></i>${l}</span>`).join('');
+      };
+
+      const oldRender=w.render;
+      w.render=function(){
+        oldRender();
+        let badge=d.getElementById('todayBadge');
+        if(!badge){
+          const host=d.querySelector('.topbar > div:nth-child(2)') || d.querySelector('.mobileHeader > div:first-child');
+          if(host){badge=d.createElement('div');badge.id='todayBadge';host.appendChild(badge);}
+        }
+        if(badge){const t=getToday();badge.innerHTML=`Today <b>${String(t.day).padStart(2,'0')}/${String(t.month).padStart(2,'0')}/${t.year}</b> • Thailand (UTC+7)`;}
+      };
+
+      w.render();
+    }catch(e){console.warn('Calendar UI enhancement failed',e)}
+  }
+  frame.addEventListener('load',apply);
+  setInterval(apply,60000);
+})();
+
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+</script>
 </body>
 </html>
