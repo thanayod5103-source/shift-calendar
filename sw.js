@@ -1,4 +1,4 @@
-const CACHE = "shift-calendar-pwa-v8";
+const CACHE = "shift-calendar-pwa-v9";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,11 +10,11 @@ const APP_SHELL = [
 
 const DETAIL_UI_SCRIPT = `
 (() => {
-  if (window.__shiftCalendarDetailUiV8) return;
-  window.__shiftCalendarDetailUiV8 = true;
+  if (window.__shiftCalendarDetailUiV9) return;
+  window.__shiftCalendarDetailUiV9 = true;
 
   const css = document.createElement('style');
-  css.id = 'shift-calendar-detail-ui-v8';
+  css.id = 'shift-calendar-detail-ui-v9';
   css.textContent = \`
     .work { background:#c7e4cf !important; color:#164b29 !important; border:1px solid #8fbe9c !important; }
     .night { background:#c7d9ee !important; color:#173d66 !important; border:1px solid #8eacd0 !important; }
@@ -33,7 +33,7 @@ const DETAIL_UI_SCRIPT = `
     #compactStatusSummary .compactStat.train { background:#eee5f7 !important; color:#4d2e68 !important; border-color:#cdb6df !important; }
     #compactStatusSummary .compactStat.ot { background:#e5efe3 !important; color:#173b14 !important; border-color:#8cac84 !important; }
     #compactStatusSummary .compactStat.nightOt { background:#e3eaf2 !important; color:#0b2e57 !important; border-color:#8ca4bf !important; }
-    .modal .changeList { margin-top:10px; }
+    .modal .changeList { margin-top:10px !important; display:block !important; }
     .modal .change { display:flex; align-items:center; justify-content:space-between; gap:10px; }
     .modal .change > * { min-width:0; }
     @media(max-width:720px){ #compactStatusSummary { grid-template-columns:repeat(2,minmax(0,1fr)); } .modal .change { padding:8px 0; } }
@@ -60,11 +60,28 @@ const DETAIL_UI_SCRIPT = `
     return null;
   }
 
+  function renumberRows(list){
+    const rows = Array.from(list.querySelectorAll('.change'));
+    rows.forEach((row,index)=>{
+      const walker=document.createTreeWalker(row,NodeFilter.SHOW_TEXT);
+      let node;
+      while(node=walker.nextNode()){
+        if(/^\\s*\\d+\\.\\s*/.test(node.nodeValue||'')){
+          node.nodeValue=node.nodeValue.replace(/^\\s*\\d+\\.\\s*/,`${index+1}. `);
+          break;
+        }
+      }
+    });
+  }
+
   function enhanceModal(){
     const modal = document.querySelector('.modal');
     if (!modal) return;
     const list = modal.querySelector('.changeList');
     if (!list) return;
+    // Keep the roster visible; only the redundant raw detail grid is removed.
+    list.style.setProperty('display','block','important');
+    renumberRows(list);
     if (!modal.querySelector('#compactStatusSummary')) {
       const rows = Array.from(list.querySelectorAll('.change'));
       const counts = new Map();
@@ -92,8 +109,8 @@ const DETAIL_UI_SCRIPT = `
 
 function transformCalendarHtml(response) {
   return response.text().then(html => {
-    if (html.includes('shift-calendar-detail-ui-v8')) return new Response(html, {status:response.status, statusText:response.statusText, headers:response.headers});
-    const injected = `<script>${DETAIL_UI_SCRIPT.replace(/<\/script/gi, '<\\/script')}</script>`;
+    if (html.includes('shift-calendar-detail-ui-v9')) return new Response(html, {status:response.status, statusText:response.statusText, headers:response.headers});
+    const injected = `<script>${DETAIL_UI_SCRIPT.replace(/<\\/script/gi, '<\\\\/script')}</script>`;
     const marker = '</body>';
     const output = html.includes(marker) ? html.replace(marker, `${injected}${marker}`) : `${html}${injected}`;
     const headers = new Headers(response.headers);
