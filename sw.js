@@ -93,7 +93,7 @@ const DETAIL_UI_SCRIPT = `
 function transformCalendarHtml(response) {
   return response.text().then(html => {
     if (html.includes('shift-calendar-detail-ui-v8')) return new Response(html, {status:response.status, statusText:response.statusText, headers:response.headers});
-    const injected = `<script>${DETAIL_UI_SCRIPT.replace(/<\\/script/gi, '<\\\\/script')}</script>`;
+    const injected = `<script>${DETAIL_UI_SCRIPT.replace(/<\/script/gi, '<\\/script')}</script>`;
     const marker = '</body>';
     const output = html.includes(marker) ? html.replace(marker, `${injected}${marker}`) : `${html}${injected}`;
     const headers = new Headers(response.headers);
