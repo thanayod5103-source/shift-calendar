@@ -1,4 +1,4 @@
-const CACHE = "against-pwa-v4";
+const CACHE = "shift-calendar-pwa-v5";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -9,12 +9,17 @@ const APP_SHELL = [
 ];
 
 self.addEventListener("install", event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil(
+    caches.open(CACHE)
+      .then(cache => cache.addAll(APP_SHELL))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -22,9 +27,13 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   const req = event.request;
   if (req.method !== "GET") return;
+
   if (req.mode === "navigate" || req.destination === "document") {
     const path = new URL(req.url).pathname;
-    const fallback = path.endsWith("/calendar.html") ? "./calendar.html" : "./index.html";
+    const fallback = path.endsWith("/calendar.html") || path.endsWith("/shift-calendar/")
+      ? "./calendar.html"
+      : "./index.html";
+
     event.respondWith(
       fetch(req).then(res => {
         const copy = res.clone();
@@ -34,6 +43,7 @@ self.addEventListener("fetch", event => {
     );
     return;
   }
+
   event.respondWith(
     caches.match(req).then(cached => cached || fetch(req).then(res => {
       const copy = res.clone();
