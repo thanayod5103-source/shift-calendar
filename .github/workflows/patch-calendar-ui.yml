@@ -9,7 +9,6 @@ permissions:
 
 jobs:
   patch:
-    if: ${{ !contains(github.event.head_commit.message, '[calendar-ui-patch]') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,13 +17,16 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-          import re
+          import re, subprocess, sys
+
+          msg=subprocess.check_output(['git','log','-1','--pretty=%B'],text=True).strip()
+          if '[calendar-ui-patch]' in msg:
+              print('Patch commit detected; no second patch required.')
+              sys.exit(0)
 
           p = Path('calendar.html')
           s = p.read_text(encoding='utf-8')
 
-          # Thailand/UTC+7 date source: the Calendar's Today is based on the
-          # real instant converted to Asia/Bangkok, independent of device TZ.
           s = s.replace(
               'function localDateParts(date=new Date()){return {year:date.getFullYear(),month:date.getMonth()+1,day:date.getDate()}}\nfunction getToday(){return localDateParts()}\nfunction scheduleNextTodayRefresh(){const now=new Date(), next=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,0,2);setTimeout(()=>{render();scheduleNextTodayRefresh()}, Math.max(1000,next-now));}',
               '''const TODAY_ZONE="Asia/Bangkok";
@@ -45,10 +47,7 @@ function scheduleNextTodayRefresh(){
 }'''
           )
 
-          # Only expose the required user-facing schedule categories.
-          s = re.sub(
-              r'const statusMap=\{.*?\};\nconst trainingCodes=',
-              '''const statusMap={
+          s = re.sub(r'const statusMap=\{.*?\};\nconst trainingCodes=', '''const statusMap={
  D:{label:"Day",cls:"work"},
  N:{label:"Night",cls:"night"},
  DOT:{label:"Day OT",cls:"ot"},
@@ -59,9 +58,7 @@ function scheduleNextTodayRefresh(){
 };
 const trainingCodes=''', s, count=1, flags=re.S)
 
-          s = re.sub(
-              r'function classify\(code\)\{.*?\n\}',
-              '''function classify(code){
+          s = re.sub(r'function classify\(code\)\{.*?\n\}', '''function classify(code){
   if(!code)return {label:"OFF",cls:"off",raw:"OFF"};
   const c=String(code).trim(), u=c.toUpperCase();
   if(statusMap[c])return {...statusMap[c],raw:c};
@@ -74,17 +71,12 @@ const trainingCodes=''', s, count=1, flags=re.S)
   return {label:"OFF",cls:"off",raw:c};
 }''', s, count=1, flags=re.S)
 
-          s = re.sub(
-              r'function renderLegend\(\)\{.*?\n\}',
-              '''function renderLegend(){
+          s = re.sub(r'function renderLegend\(\)\{.*?\n\}', '''function renderLegend(){
   const items=[["work","Day"],["night","Night"],["off","OFF"],["train","Training"],["ot","OT"]];
   document.getElementById("legend").innerHTML=items.map(([c,l])=>`<span><i class="dotStatus" style="background:var(--${c})"></i>${l}</span>`).join("");
 }''', s, count=1, flags=re.S)
 
-          # Reduce visible summary to the five required categories.
-          s = re.sub(
-              r'const p=people\(currentMonth\), counts=\{Work:0,Night:0,OT:0,Training:0,OFF:0,Other:0\};.*?document\.getElementById\("roster"\)\.innerHTML=',
-              '''const p=people(currentMonth), counts={Day:0,Night:0,OT:0,Training:0,OFF:0};
+          s = re.sub(r'const p=people\(currentMonth\), counts=\{Work:0,Night:0,OT:0,Training:0,OFF:0,Other:0\};.*?document\.getElementById\("roster"\)\.innerHTML=', '''const p=people(currentMonth), counts={Day:0,Night:0,OT:0,Training:0,OFF:0};
   p.forEach(person=>{for(let d=1;d<=data.months[currentMonth].days;d++){
     const s=classify(codeFor(currentMonth,person,d));
     if(s.label==="Day")counts.Day++;
@@ -96,19 +88,14 @@ const trainingCodes=''', s, count=1, flags=re.S)
   document.getElementById("stats").innerHTML=Object.entries(counts).map(([a,b])=>`<div class="stat"><b>${b}</b><span>${a}</span></div>`).join("");
   document.getElementById("roster").innerHTML=''', s, count=1, flags=re.S)
 
-          # Simplify the manual override menu to the same five categories.
-          s = re.sub(
-              r'<option value="">ใช้ข้อมูลจาก Excel</option>.*?</select>',
-              '''<option value="">ใช้ข้อมูลจาก Excel</option>
+          s = re.sub(r'<option value="">ใช้ข้อมูลจาก Excel</option>.*?</select>', '''<option value="">ใช้ข้อมูลจาก Excel</option>
         <option value="D">Day</option><option value="N">Night</option>
         <option value="OT">OT</option><option value="TRAIN">Training</option>
         <option value="OFF">OFF</option>
       </select>''', s, count=1, flags=re.S)
 
-          # Keep the existing collapsible bars, but make them explicitly compact.
           s = s.replace('.toolbar{padding:13px 15px;', '.toolbar{padding:10px 12px;')
           s = s.replace('.legend{display:flex;flex-wrap:wrap;gap:7px;', '.legend{display:flex;flex-wrap:wrap;gap:6px;')
-
           s = s.replace('PTT LNG • LMPT1 • V1.2 • Shift T', 'PTT LNG • LMPT1')
           s = s.replace('PTT LNG • LMPT1 • V1.2', 'PTT LNG • LMPT1')
           s = s.replace('Shift Calendar 2026 — PWA V2 Mobile', 'Shift Calendar')
