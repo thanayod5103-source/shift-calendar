@@ -1,18 +1,15 @@
 {
-  "name": "AGAINST — Co-Working Platform",
-  "short_name": "AGAINST",
-  "start_url": "./index.html",
+  "name": "Shift Calendar",
+  "short_name": "Shift Calendar",
+  "start_url": "./calendar.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f5f7fa",
+  "background_color": "#f6f8fb",
   "theme_color": "#7896b8",
   "orientation": "portrait-primary",
-  "description": "AGAINST operational workspace with Shift Calendar and future connected programs.",
+  "description": "Shift Calendar for PTT LNG operations.",
   "icons": [
     {"src":"./icon-192.png","sizes":"192x192","type":"image/png"},
     {"src":"./icon-512.png","sizes":"512x512","type":"image/png"}
-  ],
-  "shortcuts": [
-    {"name":"Shift Calendar","short_name":"Calendar","url":"./calendar.html","icons":[{"src":"./icon-192.png","sizes":"192x192"}]}
   ]
 }
