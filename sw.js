@@ -1,4 +1,4 @@
-const CACHE = "shift-calendar-pwa-v6";
+const CACHE = "shift-calendar-pwa-v7";
 const APP_SHELL = [
   "./",
   "./index.html",
