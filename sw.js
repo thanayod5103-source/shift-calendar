@@ -1,9 +1,9 @@
-const CACHE = "shift-calendar-pwa-v12";
+const CACHE = "shift-calendar-pwa-v13";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./calendar.html?v=20260816-2",
-  "./install-helper.js",
+  "./install-helper.js?v=2",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png"
@@ -30,10 +30,10 @@ async function injectInstallHelper(response) {
   const type = response.headers.get("content-type") || "";
   if (!type.includes("text/html")) return response;
   const html = await response.text();
-  if (html.includes("./install-helper.js") || html.includes("shiftCalendarInstallHelperV1")) {
+  if (html.includes("./install-helper.js") || html.includes("shiftCalendarInstallHelperV2")) {
     return new Response(html, {status: response.status, statusText: response.statusText, headers: response.headers});
   }
-  const injected = html.replace(/<\/body>/i, '<script src="./install-helper.js?v=1"></script></body>');
+  const injected = html.replace(/<\/body>/i, '<script src="./install-helper.js?v=2"></script></body>');
   return new Response(injected, {status: response.status, statusText: response.statusText, headers: response.headers});
 }
 
