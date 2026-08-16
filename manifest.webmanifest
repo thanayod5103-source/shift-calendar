@@ -1,15 +1,17 @@
 {
+  "id": "./",
   "name": "Shift Calendar",
   "short_name": "Shift Calendar",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f6f8fb",
-  "theme_color": "#7896b8",
-  "orientation": "portrait-primary",
-  "description": "Shift Calendar for PTT LNG operations.",
+  "background_color": "#f6f8f7",
+  "theme_color": "#347451",
+  "orientation": "any",
+  "description": "Modern Shift Calendar for PTT LNG operations.",
+  "categories": ["productivity", "business", "utilities"],
   "icons": [
-    {"src":"./icon-192.png","sizes":"192x192","type":"image/png"},
-    {"src":"./icon-512.png","sizes":"512x512","type":"image/png"}
+    {"src":"./icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"./icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
   ]
 }
