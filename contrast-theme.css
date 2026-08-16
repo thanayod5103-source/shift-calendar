@@ -1,0 +1,31 @@
+/* Shift Calendar contrast overlay — does not modify calendar logic */
+:root{
+  /* Normal work: deliberately pale */
+  --contrast-day:#d9f2df;
+  --contrast-day-text:#174b29;
+  --contrast-night:#d8e8fb;
+  --contrast-night-text:#163f70;
+  /* OT: deliberately saturated/dark */
+  --contrast-day-ot:#0b5d2a;
+  --contrast-day-ot-text:#ffffff;
+  --contrast-night-ot:#083b82;
+  --contrast-night-ot-text:#ffffff;
+}
+/* Normal Day */
+.badge.work,
+.miniDot.work{background:var(--contrast-day)!important;color:var(--contrast-day-text)!important}
+/* Normal Night */
+.badge.night,
+.miniDot.night{background:var(--contrast-night)!important;color:var(--contrast-night-text)!important}
+/* Day OT — strong dark green */
+.badge.ot,
+.badge.dayOt,
+.miniDot.ot,
+.miniDot.dayOt{background:var(--contrast-day-ot)!important;color:var(--contrast-day-ot-text)!important;font-weight:800!important;border:1px solid #063d1b!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)!important}
+/* Night OT — strong dark blue */
+.badge.nightOt,
+.miniDot.nightOt{background:var(--contrast-night-ot)!important;color:var(--contrast-night-ot-text)!important;font-weight:800!important;border:1px solid #052a5c!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)!important}
+/* Make the distinction survive grayscale/low brightness */
+.badge.ot,.badge.dayOt,.badge.nightOt{letter-spacing:.01em;text-shadow:0 1px 1px rgba(0,0,0,.18)}
+/* Keep empty calendar cells unaffected */
+.day.empty .badge{opacity:1}
