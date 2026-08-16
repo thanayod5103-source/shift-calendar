@@ -3,155 +3,76 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#4f6f91">
+<meta name="theme-color" content="#347451">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <title>Shift Calendar</title>
 <style>
-html,body{margin:0;width:100%;height:100%;background:#e7ebf0}body{overflow:hidden}iframe{display:block;width:100%;height:100%;height:100dvh;border:0}
-#themePanel{position:fixed;right:18px;top:58px;z-index:1000;display:none;background:#fff;border:1px solid #c7d0da;border-radius:14px;padding:8px;box-shadow:0 16px 40px rgba(20,30,40,.22);min-width:170px;font-family:Inter,"Segoe UI","Noto Sans Thai",Arial,sans-serif}
+:root{--shell-bg:#e9eef1;--panel:#fff;--line:#d7e0e5;--text:#17211d;--muted:#66736e;--accent:#347451;--accent2:#1f5c3d}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--shell-bg);font-family:Inter,"Segoe UI","Noto Sans Thai",Arial,sans-serif;color:var(--text)}
+#calendarFrame{display:block;width:100%;height:100%;height:100dvh;border:0;background:var(--shell-bg)}
+#uiShell{position:fixed;right:14px;top:12px;z-index:9999;display:flex;align-items:flex-start;gap:8px}
+#themeBtn{border:1px solid rgba(130,145,155,.45);background:rgba(255,255,255,.92);backdrop-filter:blur(12px);color:#24312b;border-radius:12px;padding:9px 12px;cursor:pointer;font-size:12px;font-weight:700;box-shadow:0 8px 24px rgba(30,45,55,.12)}
+#themeBtn:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(30,45,55,.16)}
+#themePanel{display:none;width:292px;background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:17px;padding:10px;box-shadow:0 18px 55px rgba(20,35,45,.22);backdrop-filter:blur(18px)}
 #themePanel.open{display:block}
-#themePanel button{display:block;width:100%;border:0;background:transparent;text-align:left;padding:10px 12px;border-radius:9px;cursor:pointer;color:#24313d;font-size:13px}
-#themePanel button:hover,#themePanel button.active{background:#e7edf3;font-weight:700}
-#themeBtn{border:1px solid #c3ccd5;background:#fff;color:#33414d;border-radius:10px;padding:9px 12px;cursor:pointer;font-size:12px}
-#themeBtn:hover{background:#e9eef3}
-@media(max-width:720px){#themePanel{right:10px;top:58px}#themeBtn{font-size:11px;padding:8px 10px}}
+.themeTitle{font-size:14px;font-weight:800;padding:5px 7px 2px}.themeSub{font-size:10px;color:#77847f;padding:0 7px 9px}
+.themeGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.themeCard{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px;text-align:left;cursor:pointer;color:var(--text);transition:.16s}.themeCard:hover{transform:translateY(-1px);border-color:#aab8b2}.themeCard.active{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:#f0f7f3}.themeIcon{font-size:18px;line-height:20px}.themeName{font-size:12px;font-weight:800;margin-top:5px}.themeDesc{font-size:9px;color:#77847f;margin-top:2px}
+#updateBadge{position:fixed;left:12px;bottom:12px;z-index:9998;display:none;padding:7px 10px;border-radius:999px;background:rgba(30,45,55,.82);color:#fff;font-size:10px;box-shadow:0 5px 18px rgba(0,0,0,.16)}
+@media(max-width:720px){#uiShell{right:10px;top:9px}#themePanel{width:270px}.themeGrid{grid-template-columns:1fr 1fr}#themeBtn{padding:8px 10px;font-size:11px}}
 </style>
 </head>
 <body>
-<iframe id="calendarFrame" src="./calendar.html" title="Shift Calendar"></iframe>
-<button id="themeBtn" type="button" aria-label="Theme mode" style="position:fixed;right:16px;top:12px;z-index:999">Theme</button>
-<div id="themePanel" role="menu" aria-label="Theme mode">
-  <button type="button" data-theme="light">☀️ Light Mode</button>
-  <button type="button" data-theme="dark">🌙 Dark Mode</button>
-  <button type="button" data-theme="bright">✨ Bright Mode</button>
+<iframe id="calendarFrame" src="./calendar.html?v=20260816-1" title="Shift Calendar"></iframe>
+<div id="uiShell">
+  <button id="themeBtn" type="button" aria-label="Theme Library">Theme</button>
+  <div id="themePanel" role="dialog" aria-label="Theme Library">
+    <div class="themeTitle">Theme Library</div>
+    <div class="themeSub">เลือกธีมสำหรับ Calendar ได้ทันที</div>
+    <div class="themeGrid">
+      <button class="themeCard" data-theme="white"><div class="themeIcon">○</div><div class="themeName">White</div><div class="themeDesc">Clean • Minimal</div></button>
+      <button class="themeCard" data-theme="black"><div class="themeIcon">●</div><div class="themeName">Black</div><div class="themeDesc">Deep • Focus</div></button>
+      <button class="themeCard" data-theme="gray"><div class="themeIcon">◐</div><div class="themeName">Gray</div><div class="themeDesc">Slate • Professional</div></button>
+      <button class="themeCard" data-theme="green"><div class="themeIcon">◉</div><div class="themeName">Green Flow</div><div class="themeDesc">Mint → Deep Green</div></button>
+    </div>
+  </div>
 </div>
+<div id="updateBadge">Updating app…</div>
 <script>
-(function(){
-  const frame=document.getElementById('calendarFrame');
-  const themeBtn=document.getElementById('themeBtn');
-  const themePanel=document.getElementById('themePanel');
-  const THEME_KEY='shiftCalendarTheme';
-  let applied=false;
-  let currentTheme=localStorage.getItem(THEME_KEY)||'light';
-
-  function todayInBangkok(){
-    const fmt=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',calendar:'gregory',year:'numeric',month:'2-digit',day:'2-digit'});
-    const p=fmt.formatToParts(new Date()).reduce((a,x)=>(a[x.type]=x.value,a),{});
-    return {year:+p.year,month:+p.month,day:+p.day};
-  }
-
-  const trainingNames={'IdF2':'Fire Fighting','IDF2':'Fire Fighting','IDP1':'IDP Training','IDP2':'IDP Training','IDP3':'IDP Training','IDP4':'IDP Training','IDP5':'IDP Training','IDP6':'IDP Training','IDP7':'IDP Training','IDP8':'IDP Training','IDP9':'IDP Training','IDP10':'IDP Training','IDP11':'IDP Training','IdF1':'Training','IDF1':'Training','IrF1':'Training','IrF2':'Training','PSM':'PSM Training','PSS':'PSS Training','DRO':'Training','CAM':'Training','5S':'5S Training','5s':'5S Training','SOP1':'SOP Training','SOP2':'SOP Training','IN1':'Training','IN2':'Training','IN3':'Training','BC1':'Training','BC2':'Training','BC3':'Training','BC4':'Training','BC5':'Training','BC6':'Training','OM1':'Training','OM2':'Training','Md1':'Training','Md2':'Training','Md3':'Training','Md4':'Training','Md5':'Training','ScF1':'Training','ScF2':'Training'};
-  function isTrainingCode(raw){const c=String(raw||'').trim(),u=c.toUpperCase();if(!c)return false;if(trainingNames[c]||trainingNames[u])return true;if(/^(IDP|IDF|IRF|SOP|IN|BC|SCF|MD|OM)\d*/i.test(c))return true;if(/fire\s*fighting|firefighting|อบรม|training|seminar|course/i.test(c))return true;return false}
-  function trainingLabel(raw){const c=String(raw||'').trim(),u=c.toUpperCase();return trainingNames[c]||trainingNames[u]||(/fire\s*fighting|firefighting|อบรม/i.test(c)?c:'Training')}
-
-  const codeGuide=[['D','Day','ทำงานกะกลางวัน'],['N','Night','ทำงานกะกลางคืน'],['X','OFF','หยุด / ไม่ปฏิบัติงาน'],['L','Leave','ลา'],['PH','Holiday','วันหยุด/วันหยุดนักขัตฤกษ์ตาม Excel'],['OT / D (สีเข้ม)','Day OT','ทำงานกลางวัน OT'],['OT / N (สีเข้ม)','Night OT','ทำงานกลางคืน OT'],['IDP1–IDP11','Training','Individual Development / Training ตาม Excel'],['IdF1 / IdF2 / IrF1 / IrF2','Training','Training / Fire Fighting ตาม Excel'],['PSM / PSS','Training','Training ตาม Excel'],['SOP1 / SOP2','Training','SOP Training'],['IN1–IN3 / BC1–BC6','Training','Training ตาม Excel'],['CAM / 5S / 5s','Training','Training ตาม Excel'],['OM1 / OM2 / Md1–Md5 / ScF1–ScF2','Training','Training ตาม Excel'],['D(T) / N(T)','Truck Day / Truck Night','Shift T / Truck Loading'],['Other codes','ตาม Excel','คงรหัสต้นฉบับไว้เมื่อไม่ใช่สถานะหลัก']];
-
-  function updateTodayBadge(){
-    try{
-      const d=frame.contentDocument;if(!d)return;
-      let badge=d.getElementById('todayBadge');
-      if(!badge){const host=d.querySelector('.topbar > div:nth-child(2)')||d.querySelector('.mobileHeader > div:first-child');if(!host)return;badge=d.createElement('div');badge.id='todayBadge';host.appendChild(badge)}
-      const t=todayInBangkok();badge.innerHTML=`Today <b>${String(t.day).padStart(2,'0')}/${String(t.month).padStart(2,'0')}/${t.year}</b> • Thailand (UTC+7)`;
-    }catch(e){console.warn('Today badge update failed',e)}
-  }
-
-  function addCodeGuide(d){
-    if(d.getElementById('codeGuideBack'))return;
-    const back=d.createElement('div');back.id='codeGuideBack';back.style.cssText='position:fixed;inset:0;background:rgba(20,30,40,.42);display:none;align-items:center;justify-content:center;padding:18px;z-index:100';
-    back.innerHTML=`<div id="codeGuideModal" style="width:min(760px,100%);max-height:88vh;overflow:auto;background:var(--panel,#fff);color:var(--text,#24313d);border:1px solid var(--line,#c7d0da);border-radius:17px;box-shadow:0 20px 60px rgba(20,30,40,.3);padding:20px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><strong style="font-size:19px">Calendar Code Guide</strong><button id="codeGuideClose" style="border:0;background:var(--off,#e6ebef);color:var(--text,#27333e);border-radius:9px;width:34px;height:34px;cursor:pointer;font-size:20px">×</button></div><div style="font-size:11px;color:var(--muted,#53606c);margin-bottom:10px">คำอธิบายยึดจากข้อมูลและรหัสที่ปรากฏใน Excel ของ Project นี้</div><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr><th style="text-align:left;padding:9px;background:var(--accent-soft,#e3e8ed)">รหัส / กลุ่ม</th><th style="text-align:left;padding:9px;background:var(--accent-soft,#e3e8ed)">แสดงใน Calendar</th><th style="text-align:left;padding:9px;background:var(--accent-soft,#e3e8ed)">ความหมาย</th></tr></thead><tbody>${codeGuide.map(r=>`<tr><td style="padding:9px;border-bottom:1px solid var(--line)"><b>${r[0]}</b></td><td style="padding:9px;border-bottom:1px solid var(--line)">${r[1]}</td><td style="padding:9px;border-bottom:1px solid var(--line)">${r[2]}</td></tr>`).join('')}</tbody></table></div>`;
-    d.body.appendChild(back);back.querySelector('#codeGuideClose').onclick=()=>back.style.display='none';back.addEventListener('click',e=>{if(e.target===back)back.style.display='none'});
-    const topActions=d.querySelector('.topbar .actions');if(topActions&&!d.getElementById('codeGuideBtn')){const b=d.createElement('button');b.id='codeGuideBtn';b.className='btn';b.textContent='Code Guide';topActions.insertBefore(b,topActions.firstChild);b.onclick=()=>back.style.display='flex'}
-    const mobileActions=d.querySelector('.mobileHeaderActions');if(mobileActions&&!d.getElementById('codeGuideBtnMobile')){const b=d.createElement('button');b.textContent='?';b.setAttribute('aria-label','Code Guide');b.style.cssText='border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:9px;width:38px;height:38px;cursor:pointer';mobileActions.insertBefore(b,mobileActions.firstChild);b.onclick=()=>back.style.display='flex'}
-  }
-
-  function addEdgeSidebar(d){
-    if(d.getElementById('calendarEdgeZone'))return;
-    const style=d.createElement('style');style.id='edge-sidebar-style';style.textContent=`#calendarEdgeZone{position:fixed;left:0;top:0;width:18px;height:100vh;z-index:90;pointer-events:auto}@media(max-width:720px){#calendarEdgeZone{display:none}}.edgeHint{position:fixed;left:2px;top:50%;transform:translateY(-50%);z-index:89;width:4px;height:70px;border-radius:0 5px 5px 0;background:var(--accent,#4f6f91);opacity:.55;pointer-events:none}@media(max-width:720px){.edgeHint{display:none}}`;
-    d.head.appendChild(style);const edge=d.createElement('div');edge.id='calendarEdgeZone';d.body.appendChild(edge);const hint=d.createElement('div');hint.className='edgeHint';d.body.appendChild(hint);const app=d.querySelector('.app'),sidebar=d.querySelector('.sidebar');if(app&&sidebar){let timer=null;function openEdge(){clearTimeout(timer);app.classList.add('sidebarOpen');sidebar.style.transform='translateX(0)'}function closeEdge(){app.classList.remove('sidebarOpen');sidebar.style.transform='translateX(-100%)'}edge.addEventListener('mouseenter',openEdge);sidebar.addEventListener('mouseenter',openEdge);sidebar.addEventListener('mouseleave',()=>{clearTimeout(timer);timer=setTimeout(closeEdge,140)});d.addEventListener('mousemove',e=>{if(e.clientX<=18){openEdge()}else if(e.clientX>275&&app.classList.contains('sidebarOpen')){clearTimeout(timer);timer=setTimeout(closeEdge,140)}})}}
-  }
-
-  function renumberDetailRoster(d){
-    // Fix duplicate/stale numbering when FA/FB/FC/FD members are injected into A-D.
-    const selectors=['.modal .person','.modal .roster .person','.modal .changeList .person'];
-    const nodes=[];selectors.forEach(s=>d.querySelectorAll(s).forEach(n=>{if(!nodes.includes(n))nodes.push(n)}));
-    if(!nodes.length)return;
-    nodes.forEach((node,i)=>{
-      const text=node.textContent||'';
-      const m=text.match(/^\s*\d+\.\s*/);
-      if(!m)return;
-      // Replace only the leading number while preserving the rendered name/status.
-      const walker=d.createTreeWalker(node,NodeFilter.SHOW_TEXT);let first=walker.nextNode();
-      if(first&&/^\s*\d+\.\s*/.test(first.nodeValue||'')) first.nodeValue=first.nodeValue.replace(/^\s*\d+\.\s*/,`${i+1}. `);
-    });
-  }
-
-  function themeCSS(){return `
-:root{
- --transition-theme:180ms ease;
-}
-html,body,.app,main,.card,.monthCard,.toolbar,.modal,.sideCard,.stat,.detail,.mobileHeader,.mobileBottomNav{transition:background-color var(--transition-theme),color var(--transition-theme),border-color var(--transition-theme),box-shadow var(--transition-theme)}
-body{background:var(--bg)!important;color:var(--text)!important}
-.card,.monthCard,.toolbar,.sideCard,.modal,.stat,.detail{background:var(--panel)!important;color:var(--text)!important;border-color:var(--line)!important}
-.day{background:var(--day-bg)!important;color:var(--text)!important;border-color:var(--line)!important}.day.empty{background:var(--empty-bg)!important}.dow{background:var(--dow-bg)!important;color:var(--muted-strong)!important;border-color:var(--line)!important}.num{color:var(--text)!important}.source,.small,.monthMeta,.mobileHeaderSub{color:var(--muted)!important}.title,.monthTitle,.monthName,.brand,.sideTitle{color:var(--text)!important}.btn,.viewBtn,.menuBtn,.mobileHeaderActions button{background:var(--control-bg)!important;color:var(--text)!important;border-color:var(--line)!important}.btn.primary{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important}.viewBtn.active,.navbtn.active{background:var(--accent-soft)!important;color:var(--accent-text)!important}.navbtn{color:var(--text)!important}.sidebar{background:var(--panel)!important;border-color:var(--line)!important}.legend span{background:var(--legend-bg)!important;color:var(--text)!important;border-color:var(--line)!important}.modalBack{background:var(--modal-back)!important}.close{background:var(--control-bg)!important;color:var(--text)!important}.modalActions{background:var(--panel)!important}.day.today{box-shadow:inset 0 0 0 3px var(--today)!important}.miniDay.today{box-shadow:inset 0 0 0 2px var(--today)!important}
-/* Status colors remain semantically stable across themes. */
-.theme-dark .work{background:#2d7a45!important;color:#eaffef!important}.theme-dark .night{background:#245d9b!important;color:#eef7ff!important}.theme-dark .off{background:#3d444c!important;color:#e7edf2!important}.theme-dark .train{background:#7546a0!important;color:#fff5ff!important}.theme-dark .leave{background:#8c3535!important;color:#fff!important}.theme-dark .holiday{background:#80651c!important;color:#fff7d7!important}.theme-dark .ot{background:#1f5b2e!important;color:#fff!important}.theme-dark .nightOt{background:#123e78!important;color:#fff!important}
-.theme-bright .work{background:#8ee39e!important;color:#0d3a17!important}.theme-bright .night{background:#82bdf5!important;color:#062d57!important}.theme-bright .off{background:#d6dbe1!important;color:#202832!important}.theme-bright .train{background:#d7a8ff!important;color:#35104f!important}.theme-bright .leave{background:#ff8d8d!important;color:#5c0808!important}.theme-bright .holiday{background:#ffd85c!important;color:#4d3500!important}.theme-bright .ot{background:#176b2d!important;color:#fff!important}.theme-bright .nightOt{background:#063f86!important;color:#fff!important}
-`}
-
-  function applyTheme(theme){
-    currentTheme=theme;localStorage.setItem(THEME_KEY,theme);
-    const d=frame.contentDocument;if(!d)return;
-    let style=d.getElementById('theme-mode-style');if(!style){style=d.createElement('style');style.id='theme-mode-style';d.head.appendChild(style)}
-    const palettes={
-      light:{'--bg':'#eef2f6','--panel':'#ffffff','--line':'#c4cdd7','--text':'#1d2935','--muted':'#52606d','--muted-strong':'#334250','--accent':'#4f6f91','--accent-soft':'#dce7f2','--accent-text':'#244968','--day-bg':'#ffffff','--empty-bg':'#e5eaf0','--dow-bg':'#dbe2e9','--control-bg':'#ffffff','--legend-bg':'#eef2f5','--today':'#315d85','--modal-back':'rgba(22,31,41,.48)'},
-      dark:{'--bg':'#11161c','--panel':'#1b222a','--line':'#39434e','--text':'#edf3f8','--muted':'#aab5bf','--muted-strong':'#d5dde4','--accent':'#6fa0d3','--accent-soft':'#253c52','--accent-text':'#bfe0ff','--day-bg':'#1b222a','--empty-bg':'#151b21','--dow-bg':'#242d36','--control-bg':'#222b34','--legend-bg':'#242d36','--today':'#77b6f0','--modal-back':'rgba(0,0,0,.68)'},
-      bright:{'--bg':'#ffffff','--panel':'#ffffff','--line':'#9aa9b8','--text':'#101820','--muted':'#425466','--muted-strong':'#1c2b38','--accent':'#145da0','--accent-soft':'#d9ecff','--accent-text':'#063d70','--day-bg':'#ffffff','--empty-bg':'#e1e7ee','--dow-bg':'#d2dce6','--control-bg':'#ffffff','--legend-bg':'#f0f5fa','--today':'#0b63a5','--modal-back':'rgba(0,0,0,.5)'}
-    }[theme]||null;
-    if(!palettes)return;
-    const vars=Object.entries(palettes).map(([k,v])=>`${k}:${v}`).join(';');
-    style.textContent=`${themeCSS()}\n:root{${vars}}\nhtml{background:${palettes['--bg']}!important}\nbody{background:${palettes['--bg']}!important}\n`;
-    d.documentElement.classList.remove('theme-light','theme-dark','theme-bright');d.documentElement.classList.add('theme-'+theme);
-    document.querySelectorAll('#themePanel button').forEach(b=>b.classList.toggle('active',b.dataset.theme===theme));
-    themeBtn.textContent=theme==='dark'?'🌙 Dark':theme==='bright'?'✨ Bright':'☀️ Light';
-    document.querySelector('meta[name="theme-color"]').setAttribute('content',palettes['--accent']);
-    document.body.style.background=palettes['--bg'];
-  }
-
-  themeBtn.addEventListener('click',e=>{e.stopPropagation();themePanel.classList.toggle('open')});
-  themePanel.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{applyTheme(b.dataset.theme);themePanel.classList.remove('open')}));
-  document.addEventListener('click',e=>{if(!themePanel.contains(e.target)&&e.target!==themeBtn)themePanel.classList.remove('open')});
-
-  function enhance(){
-    try{
-      const w=frame.contentWindow,d=frame.contentDocument;if(!d||!w||!w.render)return;
-      if(!applied){
-        const style=d.createElement('style');style.id='calendar-main-overrides';style.textContent=`
-          .monthFoot{display:none!important}.source{font-size:11px}.train{font-weight:700}
-          .calendar,.day,.dow{border-color:var(--line)!important}.badge{font-weight:700;letter-spacing:.05px}
-          .day.today{box-shadow:inset 0 0 0 3px var(--today)!important}.miniDay.today{box-shadow:inset 0 0 0 2px var(--today)!important}
-          /* Detail modal: keep status summary + names, remove redundant raw detail grid. */
-          .modal .detailGrid{display:none!important}
-          .modal .changeList{display:none!important}
-          .modal .roster{max-height:48vh;overflow:auto}
-          .modal .person{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
-          .modal .personName{font-weight:700;color:var(--text)}
-          .modal .personMeta{color:var(--muted)}
-          @media(max-width:720px){.modal .roster{max-height:42vh}.modal .person{padding:9px 0}}
-        `;d.head.appendChild(style);
-        w.getToday=todayInBangkok;
-        w.classify=function(code){if(!code)return{label:'OFF',cls:'off',raw:'OFF'};const c=String(code).trim(),u=c.toUpperCase();if(u==='D')return{label:'Day',cls:'work',raw:c};if(u==='N')return{label:'Night',cls:'night',raw:c};if(u==='DOT')return{label:'Day OT',cls:'ot',raw:c};if(u==='NOT')return{label:'Night OT',cls:'nightOt',raw:c};if(u==='OT')return{label:'OT',cls:'ot',raw:c};if(isTrainingCode(c))return{label:`Training${trainingLabel(c)==='Training'?'':' • '+trainingLabel(c)}`,cls:'train',raw:c};if(u==='L')return{label:'Leave',cls:'leave',raw:c};if(u==='PH')return{label:'Holiday',cls:'holiday',raw:c};if(u==='X')return{label:'OFF',cls:'off',raw:c};if(u==='D(T)')return{label:'Truck Day',cls:'work',raw:c};if(u==='N(T)')return{label:'Truck Night',cls:'night',raw:c};return{label:c,cls:'other',raw:c}};
-        addCodeGuide(d);addEdgeSidebar(d);applied=true;
-      }
-      applyTheme(currentTheme);w.render();updateTodayBadge();
-      setTimeout(()=>renumberDetailRoster(d),0);
-    }catch(e){console.warn('Calendar UI enhancement failed',e)}
-  }
-
-  frame.addEventListener('load',enhance);
-  setInterval(()=>{enhance();updateTodayBadge()},60000);
-  window.addEventListener('storage',e=>{if(e.key===THEME_KEY)applyTheme(e.newValue||'light')});
-  if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+(()=>{
+ const frame=document.getElementById('calendarFrame');
+ const btn=document.getElementById('themeBtn');
+ const panel=document.getElementById('themePanel');
+ const badge=document.getElementById('updateBadge');
+ const KEY='shiftCalendarModernTheme';
+ const themes={
+  white:{bg:'#f5f7f8',panel:'#fff',panel2:'#f0f3f4',line:'#dbe2e0',text:'#17211d',muted:'#66736e',accent:'#347451',soft:'#e6f1eb',day:'#fff',empty:'#eef2f1',dow:'#e9efec'},
+  black:{bg:'#0d1110',panel:'#151a18',panel2:'#1b211f',line:'#303936',text:'#f1f6f3',muted:'#a7b3ad',accent:'#58c98a',soft:'#183b2b',day:'#151a18',empty:'#101513',dow:'#1c2421'},
+  gray:{bg:'#e7eaec',panel:'#f8f9fa',panel2:'#eef0f2',line:'#cfd5d9',text:'#273039',muted:'#68747d',accent:'#536575',soft:'#dde4e9',day:'#fff',empty:'#e8ecef',dow:'#edf0f2'},
+  green:{bg:'#e8f3ed',panel:'#f9fcfa',panel2:'#e4f0e9',line:'#c9ded3',text:'#17372a',muted:'#5e786b',accent:'#26724d',soft:'#dcefe5',day:'#fff',empty:'#e2eee8',dow:'#e1eee8'}
+ };
+ let current=localStorage.getItem(KEY)||'white';
+ function cssVars(t){const x=themes[t]||themes.white;return `:root{--modern-bg:${x.bg};--modern-panel:${x.panel};--modern-panel-2:${x.panel2};--modern-line:${x.line};--modern-text:${x.text};--modern-muted:${x.muted};--modern-accent:${x.accent};--modern-soft:${x.soft};--modern-day:${x.day};--modern-empty:${x.empty};--modern-dow:${x.dow}} body{background:var(--modern-bg)!important;color:var(--modern-text)!important}.app,main{background:var(--modern-bg)!important;color:var(--modern-text)!important}.sidebar,.card,.toolbar,.monthCard,.sideCard,.stat,.modal,.detail{background:var(--modern-panel)!important;color:var(--modern-text)!important;border-color:var(--modern-line)!important}.day{background:var(--modern-day)!important;color:var(--modern-text)!important;border-color:var(--modern-line)!important}.day.empty{background:var(--modern-empty)!important}.dow{background:var(--modern-dow)!important;color:var(--modern-muted)!important;border-color:var(--modern-line)!important}.num,.title,.monthTitle,.monthName,.brand,.sideTitle{color:var(--modern-text)!important}.source,.small,.monthMeta,.mobileHeaderSub{color:var(--modern-muted)!important}.btn,.viewBtn,.menuBtn,.mobileHeaderActions button{background:var(--modern-panel)!important;color:var(--modern-text)!important;border-color:var(--modern-line)!important}.btn.primary{background:var(--modern-accent)!important;border-color:var(--modern-accent)!important;color:#fff!important}.viewBtn.active,.navbtn.active,.mobileShiftRow button.active,.mobileBottomNav button.active{background:var(--modern-soft)!important;color:var(--modern-accent)!important}.navbtn{color:var(--modern-text)!important}.legend span{background:var(--modern-panel-2)!important;color:var(--modern-text)!important;border-color:var(--modern-line)!important}.mobileHeader{background:${x.bg}f2!important;color:var(--modern-text)!important}.mobileBottomNav{background:${x.panel}f5!important;border-color:var(--modern-line)!important}.modalBack{background:rgba(20,30,30,.35)!important}.close{background:var(--modern-panel-2)!important;color:var(--modern-text)!important}.modalActions{background:var(--modern-panel)!important}.detail{background:var(--modern-panel-2)!important}.person{border-color:var(--modern-line)!important}.modern-theme-scope{color:var(--modern-text)!important}`}
+ function inject(){
+  const d=frame.contentDocument;if(!d||!d.head)return false;
+  let s=d.getElementById('liveModernTheme');if(!s){s=d.createElement('style');s.id='liveModernTheme';d.head.appendChild(s)}
+  s.textContent=cssVars(current);
+  d.documentElement.dataset.modernTheme=current;
+  return true;
+ }
+ function mark(){document.querySelectorAll('.themeCard').forEach(x=>x.classList.toggle('active',x.dataset.theme===current));btn.textContent='Theme: '+(themes[current]?' '+current[0].toUpperCase()+current.slice(1):'White')}
+ function apply(t){current=t;localStorage.setItem(KEY,t);inject();mark()}
+ btn.onclick=()=>panel.classList.toggle('open');
+ document.addEventListener('click',e=>{if(!document.getElementById('uiShell').contains(e.target))panel.classList.remove('open')});
+ document.querySelectorAll('.themeCard').forEach(x=>x.onclick=()=>{apply(x.dataset.theme);panel.classList.remove('open')});
+ frame.addEventListener('load',()=>{setTimeout(inject,0);setTimeout(inject,250);setTimeout(inject,1000)});
+ const observer=new MutationObserver(()=>{if(frame.contentDocument?.head && !frame.contentDocument.getElementById('liveModernTheme'))inject()});
+ frame.addEventListener('load',()=>{try{observer.observe(frame.contentDocument.body,{childList:true,subtree:true})}catch(e){}});
+ mark();
+ // Ask an old service worker to leave control, then reload once so the new app shell is fetched.
+ if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(regs=>Promise.all(regs.map(r=>r.update()))).catch(()=>{});
+ }
 })();
 </script>
 </body>
