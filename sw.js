@@ -1,9 +1,10 @@
-const CACHE = "shift-calendar-pwa-v13";
+const CACHE = "shift-calendar-pwa-v14";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./calendar.html?v=20260816-2",
   "./install-helper.js?v=2",
+  "./contrast-theme.css?v=20260816-1",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png"
@@ -25,16 +26,19 @@ self.addEventListener("activate", event => {
   );
 });
 
-async function injectInstallHelper(response) {
+async function enhanceHtml(response) {
   if (!response || !response.ok) return response;
   const type = response.headers.get("content-type") || "";
   if (!type.includes("text/html")) return response;
   const html = await response.text();
-  if (html.includes("./install-helper.js") || html.includes("shiftCalendarInstallHelperV2")) {
-    return new Response(html, {status: response.status, statusText: response.statusText, headers: response.headers});
+  let enhanced = html;
+  if (!enhanced.includes("contrast-theme.css")) {
+    enhanced = enhanced.replace(/<\/head>/i, '<link rel="stylesheet" href="./contrast-theme.css?v=20260816-1"><\/head>');
   }
-  const injected = html.replace(/<\/body>/i, '<script src="./install-helper.js?v=2"></script></body>');
-  return new Response(injected, {status: response.status, statusText: response.statusText, headers: response.headers});
+  if (!enhanced.includes("./install-helper.js")) {
+    enhanced = enhanced.replace(/<\/body>/i, '<script src="./install-helper.js?v=2"><\/script></body>');
+  }
+  return new Response(enhanced, {status: response.status, statusText: response.statusText, headers: response.headers});
 }
 
 self.addEventListener("fetch", event => {
@@ -47,7 +51,7 @@ self.addEventListener("fetch", event => {
     event.respondWith(
       fetch(req)
         .then(async response => {
-          const enhanced = await injectInstallHelper(response.clone());
+          const enhanced = await enhanceHtml(response.clone());
           const cache = await caches.open(CACHE);
           cache.put(new Request(new URL("./index.html", self.location.href)), enhanced.clone()).catch(() => {});
           return enhanced;
