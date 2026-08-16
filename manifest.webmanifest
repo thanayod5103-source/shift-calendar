@@ -1,8 +1,8 @@
 {
-  "id": "./",
+  "id": "./shift-calendar",
   "name": "Shift Calendar",
   "short_name": "Shift Calendar",
-  "start_url": "./",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f6f8f7",
