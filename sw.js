@@ -33,17 +33,15 @@ async function injectInstallHelper(response) {
   if (html.includes("./install-helper.js") || html.includes("shiftCalendarInstallHelperV1")) {
     return new Response(html, {status: response.status, statusText: response.statusText, headers: response.headers});
   }
-  const injected = html.replace(/<\\/body>/i, '<script src="./install-helper.js?v=1"></script></body>');
+  const injected = html.replace(/<\/body>/i, '<script src="./install-helper.js?v=1"></script></body>');
   return new Response(injected, {status: response.status, statusText: response.statusText, headers: response.headers});
 }
 
 self.addEventListener("fetch", event => {
   const req = event.request;
   if (req.method !== "GET") return;
-
   const url = new URL(req.url);
-  const sameOrigin = url.origin === self.location.origin;
-  if (!sameOrigin) return;
+  if (url.origin !== self.location.origin) return;
 
   if (req.mode === "navigate") {
     event.respondWith(
@@ -51,10 +49,10 @@ self.addEventListener("fetch", event => {
         .then(async response => {
           const enhanced = await injectInstallHelper(response.clone());
           const cache = await caches.open(CACHE);
-          cache.put("./index.html", enhanced.clone()).catch(() => {});
+          cache.put(new Request(new URL("./index.html", self.location.href)), enhanced.clone()).catch(() => {});
           return enhanced;
         })
-        .catch(() => caches.match("./index.html").then(r => r || caches.match("./")))
+        .catch(() => caches.match(new Request(new URL("./index.html", self.location.href))).then(r => r || caches.match("./")))
     );
     return;
   }
