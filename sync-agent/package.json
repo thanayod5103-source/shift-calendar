@@ -1,0 +1,9 @@
+{
+  "name": "shift-calendar-sync-agent",
+  "private": true,
+  "type": "module",
+  "scripts": { "sync": "node sync.js" },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}
