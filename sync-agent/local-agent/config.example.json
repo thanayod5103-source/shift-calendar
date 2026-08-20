@@ -1,0 +1,8 @@
+{
+  "workbook_path": "C:\\Users\\YOUR_USER\\Company Sync\\ตารางกะ ปค.T1_2569_Macro.xlsm",
+  "repository": "thanayod5103-source/shift-calendar",
+  "branch": "main",
+  "output_path": "data/schedule.json",
+  "metadata_path": "data/metadata.json",
+  "interval_seconds": 300
+}
