@@ -1,38 +1,5 @@
-const CACHE = "shift-calendar-pwa-v15";
-const APP_SHELL = [
-  "./",
-  "./index.html",
-  "./calendar.html?v=modern-20260820",
-  "./redesign-modern.css?v=20260820",
-  "./install-helper.js?v=2",
-  "./contrast-theme.css?v=20260816-1",
-  "./manifest.webmanifest",
-  "./icon-192.png",
-  "./icon-512.png"
-];
-
-self.addEventListener("install", event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
-});
-self.addEventListener("activate", event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim()));
-});
-
-async function enhanceHtml(response) {
-  if (!response || !response.ok) return response;
-  const type = response.headers.get("content-type") || "";
-  if (!type.includes("text/html")) return response;
-  const html = await response.text();
-  let enhanced = html;
-  if (!enhanced.includes("contrast-theme.css")) enhanced = enhanced.replace(/<\/head>/i, '<link rel="stylesheet" href="./contrast-theme.css?v=20260816-1"></head>');
-  if (!enhanced.includes("./install-helper.js")) enhanced = enhanced.replace(/<\/body>/i, '<script src="./install-helper.js?v=2"></script></body>');
-  return new Response(enhanced,{status:response.status,statusText:response.statusText,headers:response.headers});
-}
-
-self.addEventListener("fetch", event => {
-  const req=event.request;if(req.method!=="GET")return;const url=new URL(req.url);if(url.origin!==self.location.origin)return;
-  if(req.mode==="navigate"){
-    event.respondWith(fetch(req).then(async response=>{const enhanced=await enhanceHtml(response.clone());const cache=await caches.open(CACHE);cache.put(new Request(new URL("./index.html",self.location.href)),enhanced.clone()).catch(()=>{});return enhanced;}).catch(()=>caches.match(new Request(new URL("./index.html",self.location.href))).then(r=>r||caches.match("./"))));return;
-  }
-  event.respondWith(caches.match(req).then(cached=>cached||fetch(req).then(response=>{if(response.ok)caches.open(CACHE).then(cache=>cache.put(req,response.clone())).catch(()=>{});return response;})));
-});
+const CACHE="shift-calendar-pwa-v16";
+const APP_SHELL=["./","./index.html","./calendar.html?v=live-sync-20260820","./redesign-modern.css?v=20260820","./install-helper.js?v=2","./contrast-theme.css?v=20260816-1","./live-sync-client.js?v=1","./live-sync.css?v=1","./manifest.webmanifest","./icon-192.png","./icon-512.png"];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(APP_SHELL)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);if(u.origin!==location.origin)return;if(u.pathname.endsWith('/data/schedule.json')||u.pathname.endsWith('/data/metadata.json')){e.respondWith(fetch(r,{cache:'no-store'}).catch(()=>caches.match(r)));return}if(r.mode==='navigate'){e.respondWith(fetch(r).then(async x=>{const c=await caches.open(CACHE);c.put(r,x.clone());return x}).catch(()=>caches.match(r).then(x=>x||caches.match('./index.html'))));return}e.respondWith(caches.match(r).then(x=>x||fetch(r).then(y=>{if(y.ok)caches.open(CACHE).then(c=>c.put(r,y.clone()));return y}))) });
