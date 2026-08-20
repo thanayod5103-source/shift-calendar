@@ -8,72 +8,26 @@
 <link rel="apple-touch-icon" href="./icon-192.png">
 <title>Shift Calendar</title>
 <style>
-:root{--shell-bg:#e9eef1;--panel:#fff;--line:#d7e0e5;--text:#17211d;--muted:#66736e;--accent:#347451;--accent2:#1f5c3d}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--shell-bg);font-family:Inter,"Segoe UI","Noto Sans Thai",Arial,sans-serif;color:var(--text)}
-#calendarFrame{display:block;width:100%;height:100%;height:100dvh;border:0;background:var(--shell-bg)}
-#uiShell{position:fixed;right:14px;top:12px;z-index:9999;display:flex;align-items:flex-start;gap:8px}
-#themeBtn{border:1px solid rgba(130,145,155,.45);background:rgba(255,255,255,.92);backdrop-filter:blur(12px);color:#24312b;border-radius:12px;padding:9px 12px;cursor:pointer;font-size:12px;font-weight:700;box-shadow:0 8px 24px rgba(30,45,55,.12)}
-#themeBtn:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(30,45,55,.16)}
-#themePanel{display:none;width:292px;background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:17px;padding:10px;box-shadow:0 18px 55px rgba(20,35,45,.22);backdrop-filter:blur(18px)}
-#themePanel.open{display:block}
-.themeTitle{font-size:14px;font-weight:800;padding:5px 7px 2px}.themeSub{font-size:10px;color:#77847f;padding:0 7px 9px}
-.themeGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.themeCard{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px;text-align:left;cursor:pointer;color:var(--text);transition:.16s}.themeCard:hover{transform:translateY(-1px);border-color:#aab8b2}.themeCard.active{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:#f0f7f3}.themeIcon{font-size:18px;line-height:20px}.themeName{font-size:12px;font-weight:800;margin-top:5px}.themeDesc{font-size:9px;color:#77847f;margin-top:2px}
-#updateBadge{position:fixed;left:12px;bottom:12px;z-index:9998;display:none;padding:7px 10px;border-radius:999px;background:rgba(30,45,55,.82);color:#fff;font-size:10px;box-shadow:0 5px 18px rgba(0,0,0,.16)}
-@media(max-width:720px){#uiShell{right:10px;top:9px}#themePanel{width:270px}.themeGrid{grid-template-columns:1fr 1fr}#themeBtn{padding:8px 10px;font-size:11px}}
+:root{--shell-bg:#eef3f1;--panel:rgba(255,255,255,.92);--line:rgba(28,59,45,.13);--text:#14251d;--accent:#2f7a54;--radius:18px;--shadow:0 18px 48px rgba(28,59,45,.14)}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--shell-bg);font-family:Inter,"Segoe UI","Noto Sans Thai",Arial,sans-serif;color:var(--text)}#calendarFrame{display:block;width:100%;height:100%;height:100dvh;border:0;background:var(--shell-bg)}#themeDock{position:fixed;right:16px;top:14px;z-index:9999;display:flex;align-items:flex-start;gap:8px}.dockBtn{width:42px;height:42px;border:1px solid var(--line);border-radius:15px;background:var(--panel);backdrop-filter:blur(16px);box-shadow:0 8px 25px rgba(25,50,38,.11);color:var(--text);font-size:17px;cursor:pointer;transition:.18s}.dockBtn:hover{transform:translateY(-2px)}#themePanel{display:none;width:300px;padding:10px;background:var(--panel);backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}#themePanel.open{display:block}.themeHead{padding:7px 8px 10px}.themeHead b{display:block;font-size:14px}.themeHead span{font-size:10px;color:#748079}.themeGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.themeCard{border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.68);padding:11px;text-align:left;cursor:pointer;color:var(--text);transition:.18s}.themeCard:hover{transform:translateY(-2px)}.themeCard.active{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}.themeIcon{font-size:20px}.themeName{font-size:12px;font-weight:800;margin-top:5px}.themeDesc{font-size:9px;color:#748079;margin-top:2px}@media(max-width:720px){#themeDock{right:10px;top:9px}#themePanel{width:278px}.dockBtn{width:39px;height:39px;border-radius:13px}}
 </style>
 </head>
 <body>
-<iframe id="calendarFrame" src="./calendar.html?v=20260816-1" title="Shift Calendar"></iframe>
-<div id="uiShell">
-  <button id="themeBtn" type="button" aria-label="Theme Library">Theme</button>
-  <div id="themePanel" role="dialog" aria-label="Theme Library">
-    <div class="themeTitle">Theme Library</div>
-    <div class="themeSub">เลือกธีมสำหรับ Calendar ได้ทันที</div>
-    <div class="themeGrid">
-      <button class="themeCard" data-theme="white"><div class="themeIcon">○</div><div class="themeName">White</div><div class="themeDesc">Clean • Minimal</div></button>
-      <button class="themeCard" data-theme="black"><div class="themeIcon">●</div><div class="themeName">Black</div><div class="themeDesc">Deep • Focus</div></button>
-      <button class="themeCard" data-theme="gray"><div class="themeIcon">◐</div><div class="themeName">Gray</div><div class="themeDesc">Slate • Professional</div></button>
-      <button class="themeCard" data-theme="green"><div class="themeIcon">◉</div><div class="themeName">Green Flow</div><div class="themeDesc">Mint → Deep Green</div></button>
-    </div>
-  </div>
+<iframe id="calendarFrame" src="./calendar.html?v=modern-20260820" title="Shift Calendar"></iframe>
+<div id="themeDock">
+ <button class="dockBtn" id="themeBtn" aria-label="เปิดคลัง Theme">◐</button>
+ <div id="themePanel"><div class="themeHead"><b>Theme Library</b><span>เลือกบรรยากาศของ Shift Calendar</span></div><div class="themeGrid">
+  <button class="themeCard" data-theme="white"><div class="themeIcon">☀</div><div class="themeName">White</div><div class="themeDesc">Clean • Minimal</div></button>
+  <button class="themeCard" data-theme="black"><div class="themeIcon">●</div><div class="themeName">Black</div><div class="themeDesc">Deep • Focus</div></button>
+  <button class="themeCard" data-theme="gray"><div class="themeIcon">◐</div><div class="themeName">Gray</div><div class="themeDesc">Slate • Professional</div></button>
+  <button class="themeCard" data-theme="green"><div class="themeIcon">◉</div><div class="themeName">Green Flow</div><div class="themeDesc">Mint → Deep Green</div></button>
+ </div></div>
 </div>
-<div id="updateBadge">Updating app…</div>
 <script>
-(()=>{
- const frame=document.getElementById('calendarFrame');
- const btn=document.getElementById('themeBtn');
- const panel=document.getElementById('themePanel');
- const badge=document.getElementById('updateBadge');
- const KEY='shiftCalendarModernTheme';
- const themes={
-  white:{bg:'#f5f7f8',panel:'#fff',panel2:'#f0f3f4',line:'#dbe2e0',text:'#17211d',muted:'#66736e',accent:'#347451',soft:'#e6f1eb',day:'#fff',empty:'#eef2f1',dow:'#e9efec'},
-  black:{bg:'#0d1110',panel:'#151a18',panel2:'#1b211f',line:'#303936',text:'#f1f6f3',muted:'#a7b3ad',accent:'#58c98a',soft:'#183b2b',day:'#151a18',empty:'#101513',dow:'#1c2421'},
-  gray:{bg:'#e7eaec',panel:'#f8f9fa',panel2:'#eef0f2',line:'#cfd5d9',text:'#273039',muted:'#68747d',accent:'#536575',soft:'#dde4e9',day:'#fff',empty:'#e8ecef',dow:'#edf0f2'},
-  green:{bg:'#e8f3ed',panel:'#f9fcfa',panel2:'#e4f0e9',line:'#c9ded3',text:'#17372a',muted:'#5e786b',accent:'#26724d',soft:'#dcefe5',day:'#fff',empty:'#e2eee8',dow:'#e1eee8'}
- };
- let current=localStorage.getItem(KEY)||'white';
- function cssVars(t){const x=themes[t]||themes.white;return `:root{--modern-bg:${x.bg};--modern-panel:${x.panel};--modern-panel-2:${x.panel2};--modern-line:${x.line};--modern-text:${x.text};--modern-muted:${x.muted};--modern-accent:${x.accent};--modern-soft:${x.soft};--modern-day:${x.day};--modern-empty:${x.empty};--modern-dow:${x.dow}} body{background:var(--modern-bg)!important;color:var(--modern-text)!important}.app,main{background:var(--modern-bg)!important;color:var(--modern-text)!important}.sidebar,.card,.toolbar,.monthCard,.sideCard,.stat,.modal,.detail{background:var(--modern-panel)!important;color:var(--modern-text)!important;border-color:var(--modern-line)!important}.day{background:var(--modern-day)!important;color:var(--modern-text)!important;border-color:var(--modern-line)!important}.day.empty{background:var(--modern-empty)!important}.dow{background:var(--modern-dow)!important;color:var(--modern-muted)!important;border-color:var(--modern-line)!important}.num,.title,.monthTitle,.monthName,.brand,.sideTitle{color:var(--modern-text)!important}.source,.small,.monthMeta,.mobileHeaderSub{color:var(--modern-muted)!important}.btn,.viewBtn,.menuBtn,.mobileHeaderActions button{background:var(--modern-panel)!important;color:var(--modern-text)!important;border-color:var(--modern-line)!important}.btn.primary{background:var(--modern-accent)!important;border-color:var(--modern-accent)!important;color:#fff!important}.viewBtn.active,.navbtn.active,.mobileShiftRow button.active,.mobileBottomNav button.active{background:var(--modern-soft)!important;color:var(--modern-accent)!important}.navbtn{color:var(--modern-text)!important}.legend span{background:var(--modern-panel-2)!important;color:var(--modern-text)!important;border-color:var(--modern-line)!important}.mobileHeader{background:${x.bg}f2!important;color:var(--modern-text)!important}.mobileBottomNav{background:${x.panel}f5!important;border-color:var(--modern-line)!important}.modalBack{background:rgba(20,30,30,.35)!important}.close{background:var(--modern-panel-2)!important;color:var(--modern-text)!important}.modalActions{background:var(--modern-panel)!important}.detail{background:var(--modern-panel-2)!important}.person{border-color:var(--modern-line)!important}.modern-theme-scope{color:var(--modern-text)!important}`}
- function inject(){
-  const d=frame.contentDocument;if(!d||!d.head)return false;
-  let s=d.getElementById('liveModernTheme');if(!s){s=d.createElement('style');s.id='liveModernTheme';d.head.appendChild(s)}
-  s.textContent=cssVars(current);
-  d.documentElement.dataset.modernTheme=current;
-  return true;
- }
- function mark(){document.querySelectorAll('.themeCard').forEach(x=>x.classList.toggle('active',x.dataset.theme===current));btn.textContent='Theme: '+(themes[current]?' '+current[0].toUpperCase()+current.slice(1):'White')}
- function apply(t){current=t;localStorage.setItem(KEY,t);inject();mark()}
- btn.onclick=()=>panel.classList.toggle('open');
- document.addEventListener('click',e=>{if(!document.getElementById('uiShell').contains(e.target))panel.classList.remove('open')});
- document.querySelectorAll('.themeCard').forEach(x=>x.onclick=()=>{apply(x.dataset.theme);panel.classList.remove('open')});
- frame.addEventListener('load',()=>{setTimeout(inject,0);setTimeout(inject,250);setTimeout(inject,1000)});
- const observer=new MutationObserver(()=>{if(frame.contentDocument?.head && !frame.contentDocument.getElementById('liveModernTheme'))inject()});
- frame.addEventListener('load',()=>{try{observer.observe(frame.contentDocument.body,{childList:true,subtree:true})}catch(e){}});
- mark();
- // Ask an old service worker to leave control, then reload once so the new app shell is fetched.
- if('serviceWorker' in navigator){
-  navigator.serviceWorker.getRegistrations().then(regs=>Promise.all(regs.map(r=>r.update()))).catch(()=>{});
- }
-})();
+(()=>{const frame=document.getElementById('calendarFrame'),btn=document.getElementById('themeBtn'),panel=document.getElementById('themePanel'),KEY='shiftCalendarModernTheme';let current=localStorage.getItem(KEY)||'white';
+const themes={white:{bg:'#eef3f1',panel:'rgba(255,255,255,.92)',panel2:'#f4f8f6',line:'rgba(30,63,49,.12)',text:'#14251d',muted:'#708078',accent:'#2f7a54',soft:'#e1f0e8',day:'#fff',empty:'#edf2ef',dow:'#f1f6f3'},black:{bg:'#0c1110',panel:'#151b18',panel2:'#1d2622',line:'#314039',text:'#f1f7f3',muted:'#9eaea5',accent:'#59c98b',soft:'#193d2b',day:'#151b18',empty:'#101512',dow:'#1b231f'},gray:{bg:'#e6eaed',panel:'#f8f9fa',panel2:'#eef1f3',line:'#cbd2d7',text:'#273139',muted:'#68747c',accent:'#536878',soft:'#dce5ea',day:'#fff',empty:'#e9edef',dow:'#f0f2f4'},green:{bg:'#dcefe5',panel:'#f8fcfa',panel2:'#e5f2e9',line:'#c4ddce',text:'#17372a',muted:'#5d786b',accent:'#26724d',soft:'#d9eee1',day:'#fff',empty:'#e6f1eb',dow:'#e8f3ec'}};
+function vars(t){let x=themes[t]||themes.white;return `:root{--modern-bg:${x.bg};--modern-panel:${x.panel};--modern-panel-2:${x.panel2};--modern-line:${x.line};--modern-text:${x.text};--modern-muted:${x.muted};--modern-accent:${x.accent};--modern-soft:${x.soft};--modern-day:${x.day};--modern-empty:${x.empty};--modern-dow:${x.dow}}`;}
+function inject(){let d=frame.contentDocument;if(!d)return;d.documentElement.dataset.modernTheme=current;let s=d.getElementById('liveModernThemeVars');if(!s){s=d.createElement('style');s.id='liveModernThemeVars';d.head.appendChild(s)}s.textContent=vars(current);let l=d.getElementById('modernRedesignCss');if(!l){l=d.createElement('link');l.id='modernRedesignCss';l.rel='stylesheet';l.href='./redesign-modern.css?v=20260820';d.head.appendChild(l)}}
+function mark(){document.querySelectorAll('.themeCard').forEach(c=>c.classList.toggle('active',c.dataset.theme===current))}function apply(t){current=t;localStorage.setItem(KEY,t);inject();mark()}btn.onclick=()=>panel.classList.toggle('open');document.addEventListener('click',e=>{if(!document.getElementById('themeDock').contains(e.target))panel.classList.remove('open')});document.querySelectorAll('.themeCard').forEach(c=>c.onclick=()=>{apply(c.dataset.theme);panel.classList.remove('open')});frame.addEventListener('load',()=>{inject();setTimeout(inject,200);setTimeout(inject,800)});mark();if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.update())).catch(()=>{});})();
 </script>
 </body>
 </html>
